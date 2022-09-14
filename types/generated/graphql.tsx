@@ -26683,12 +26683,89 @@ export enum WorkflowRunOrderField {
   CreatedAt = 'CREATED_AT'
 }
 
+export type SearchRepositoriesQueryVariables = Exact<{
+  first?: InputMaybe<Scalars['Int']>;
+  after?: InputMaybe<Scalars['String']>;
+  last?: InputMaybe<Scalars['Int']>;
+  before?: InputMaybe<Scalars['String']>;
+  query: Scalars['String'];
+}>;
+
+
+export type SearchRepositoriesQuery = { __typename?: 'Query', search: { __typename?: 'SearchResultItemConnection', repositoryCount: number, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean, hasPreviousPage: boolean, startCursor?: string | null }, edges?: Array<{ __typename?: 'SearchResultItemEdge', cursor: string, node?: { __typename?: 'App' } | { __typename?: 'Discussion' } | { __typename?: 'Issue' } | { __typename?: 'MarketplaceListing' } | { __typename?: 'Organization' } | { __typename?: 'PullRequest' } | { __typename?: 'Repository', id: string, name: string, url: any, viewerHasStarred: boolean, stargazers: { __typename?: 'StargazerConnection', totalCount: number } } | { __typename?: 'User' } | null } | null> | null } };
+
 export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetMeQuery = { __typename?: 'Query', user?: { __typename?: 'User', name?: string | null, avatarUrl: any } | null };
 
 
+export const SearchRepositoriesDocument = gql`
+    query searchRepositories($first: Int, $after: String, $last: Int, $before: String, $query: String!) {
+  search(
+    first: $first
+    after: $after
+    last: $last
+    before: $before
+    query: $query
+    type: REPOSITORY
+  ) {
+    repositoryCount
+    pageInfo {
+      endCursor
+      hasNextPage
+      hasPreviousPage
+      startCursor
+    }
+    edges {
+      cursor
+      node {
+        ... on Repository {
+          id
+          name
+          url
+          stargazers {
+            totalCount
+          }
+          viewerHasStarred
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchRepositoriesQuery__
+ *
+ * To run a query within a React component, call `useSearchRepositoriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchRepositoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchRepositoriesQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      after: // value for 'after'
+ *      last: // value for 'last'
+ *      before: // value for 'before'
+ *      query: // value for 'query'
+ *   },
+ * });
+ */
+export function useSearchRepositoriesQuery(baseOptions: Apollo.QueryHookOptions<SearchRepositoriesQuery, SearchRepositoriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchRepositoriesQuery, SearchRepositoriesQueryVariables>(SearchRepositoriesDocument, options);
+      }
+export function useSearchRepositoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchRepositoriesQuery, SearchRepositoriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchRepositoriesQuery, SearchRepositoriesQueryVariables>(SearchRepositoriesDocument, options);
+        }
+export type SearchRepositoriesQueryHookResult = ReturnType<typeof useSearchRepositoriesQuery>;
+export type SearchRepositoriesLazyQueryHookResult = ReturnType<typeof useSearchRepositoriesLazyQuery>;
+export type SearchRepositoriesQueryResult = Apollo.QueryResult<SearchRepositoriesQuery, SearchRepositoriesQueryVariables>;
 export const GetMeDocument = gql`
     query getMe {
   user(login: "yukiHaga") {
