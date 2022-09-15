@@ -5,8 +5,16 @@ import Image from "next/image";
 import { SEARCH_REPOSITORIES } from "../queries/queries";
 import { SearchRepositoriesQuery } from "../types/generated/graphql";
 import { useQuery } from "@apollo/client";
+import { prepareServerlessUrl } from "next/dist/server/base-server";
 
 const PER_PAGE = 5;
+type DEFAULT_STATE = {
+  first: number;
+  after: string | null | undefined;
+  last: string | null | undefined;
+  before: string | null | undefined;
+  query: string;
+};
 const DEFAULT_STATE = {
   first: PER_PAGE,
   after: null,
@@ -16,7 +24,7 @@ const DEFAULT_STATE = {
 };
 
 const Home: NextPage = () => {
-  const [state, setState] = useState(DEFAULT_STATE);
+  const [state, setState] = useState<DEFAULT_STATE>(DEFAULT_STATE);
   const { loading, error, data } = useQuery<SearchRepositoriesQuery>(
     SEARCH_REPOSITORIES,
     {
@@ -30,6 +38,13 @@ const Home: NextPage = () => {
   const repositoryCount = search?.repositoryCount;
   const repositoryUnit = repositoryCount === 1 ? "Repository" : "Repositories";
   const title = `GitHub Repositories Search Results - ${repositoryCount} ${repositoryUnit}`;
+
+  const goNext = (search: SearchRepositoriesQuery["search"]) => {
+    setState((prev) => ({
+      ...prev,
+      after: search.pageInfo.endCursor,
+    }));
+  };
   return (
     <>
       <form>
@@ -55,6 +70,9 @@ const Home: NextPage = () => {
           );
         })}
       </ul>
+      {search?.pageInfo.hasNextPage && (
+        <button onClick={() => goNext(search)}>Next</button>
+      )}
     </>
   );
 };
