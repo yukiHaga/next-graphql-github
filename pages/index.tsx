@@ -1,14 +1,14 @@
 import type { NextPage } from "next";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { SEARCH_REPOSITORIES } from "../queries/queries";
 import { SearchRepositoriesQuery } from "../types/generated/graphql";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import StarButton from "../components/StarButton";
 
 const PER_PAGE = 5;
-type DEFAULT_STATE = {
+export type DEFAULT_STATE = {
   first: number | null | undefined;
   after: string | null | undefined;
   last: number | null | undefined;
@@ -20,12 +20,12 @@ const DEFAULT_STATE = {
   after: null,
   last: null,
   before: null,
-  query: "フロントエンドエンジニア",
+  query: "",
 };
 
 const Home: NextPage = () => {
   const [state, setState] = useState<DEFAULT_STATE>(DEFAULT_STATE);
-  const { loading, error, data } = useQuery<SearchRepositoriesQuery>(
+  const [searchRepositories, { data }] = useLazyQuery<SearchRepositoriesQuery>(
     SEARCH_REPOSITORIES,
     {
       variables: { ...state },
@@ -56,15 +56,21 @@ const Home: NextPage = () => {
     }));
   };
 
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    searchRepositories();
+  };
+
   return (
     <>
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           value={state.query}
           onChange={(e) =>
             setState((prev) => ({ ...prev, query: e.target.value }))
           }
         />
+        <button type="submit">検索</button>
       </form>
       <h2>{title}</h2>
       <ul>
@@ -77,7 +83,7 @@ const Home: NextPage = () => {
                 {/* @ts-ignore*/}
                 {node?.name}
               </a>
-              <StarButton {...{ node }} />
+              <StarButton {...{ node, state }} />
             </li>
           );
         })}
