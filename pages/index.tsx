@@ -5,7 +5,7 @@ import Image from "next/image";
 import { SEARCH_REPOSITORIES } from "../queries/queries";
 import { SearchRepositoriesQuery } from "../types/generated/graphql";
 import { useQuery } from "@apollo/client";
-import { prepareServerlessUrl } from "next/dist/server/base-server";
+import StarButton from "../components/StarButton";
 
 const PER_PAGE = 5;
 type DEFAULT_STATE = {
@@ -77,6 +77,7 @@ const Home: NextPage = () => {
                 {/* @ts-ignore*/}
                 {node?.name}
               </a>
+              <StarButton {...{ node }} />
             </li>
           );
         })}
