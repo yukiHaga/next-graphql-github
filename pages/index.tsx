@@ -9,9 +9,9 @@ import { prepareServerlessUrl } from "next/dist/server/base-server";
 
 const PER_PAGE = 5;
 type DEFAULT_STATE = {
-  first: number;
+  first: number | null | undefined;
   after: string | null | undefined;
-  last: string | null | undefined;
+  last: number | null | undefined;
   before: string | null | undefined;
   query: string;
 };
@@ -39,12 +39,23 @@ const Home: NextPage = () => {
   const repositoryUnit = repositoryCount === 1 ? "Repository" : "Repositories";
   const title = `GitHub Repositories Search Results - ${repositoryCount} ${repositoryUnit}`;
 
+  const goPrevious = (search: SearchRepositoriesQuery["search"]) => {
+    setState((prev) => ({
+      ...prev,
+      first: null,
+      after: null,
+      last: PER_PAGE,
+      before: search.pageInfo.startCursor,
+    }));
+  };
+
   const goNext = (search: SearchRepositoriesQuery["search"]) => {
     setState((prev) => ({
       ...prev,
       after: search.pageInfo.endCursor,
     }));
   };
+
   return (
     <>
       <form>
@@ -70,6 +81,9 @@ const Home: NextPage = () => {
           );
         })}
       </ul>
+      {search?.pageInfo.hasPreviousPage && (
+        <button onClick={() => goPrevious(search)}>Previous</button>
+      )}
       {search?.pageInfo.hasNextPage && (
         <button onClick={() => goNext(search)}>Next</button>
       )}
