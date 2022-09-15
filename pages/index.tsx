@@ -32,7 +32,6 @@ const Home: NextPage = () => {
   const title = `GitHub Repositories Search Results - ${repositoryCount} ${repositoryUnit}`;
   return (
     <>
-      <h2>{title}</h2>
       <form>
         <input
           value={state.query}
@@ -41,6 +40,21 @@ const Home: NextPage = () => {
           }
         />
       </form>
+      <h2>{title}</h2>
+      <ul>
+        {search?.edges?.map((edge, i) => {
+          const node = edge?.node;
+          return (
+            <li key={i}>
+              {/* @ts-ignore*/}
+              <a href={node?.url} target="_blank" rel="noreferrer">
+                {/* @ts-ignore*/}
+                {node?.name}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
     </>
   );
 };
