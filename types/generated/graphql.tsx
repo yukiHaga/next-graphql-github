@@ -26699,6 +26699,13 @@ export type GetMeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetMeQuery = { __typename?: 'Query', user?: { __typename?: 'User', name?: string | null, avatarUrl: any } | null };
 
+export type AddStarMutationVariables = Exact<{
+  input: AddStarInput;
+}>;
+
+
+export type AddStarMutation = { __typename?: 'Mutation', addStar?: { __typename?: 'AddStarPayload', starrable?: { __typename?: 'Gist', id: string, viewerHasStarred: boolean } | { __typename?: 'Repository', id: string, viewerHasStarred: boolean } | { __typename?: 'Topic', id: string, viewerHasStarred: boolean } | null } | null };
+
 
 export const SearchRepositoriesDocument = gql`
     query searchRepositories($first: Int, $after: String, $last: Int, $before: String, $query: String!) {
@@ -26801,3 +26808,39 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
+export const AddStarDocument = gql`
+    mutation addStar($input: AddStarInput!) {
+  addStar(input: $input) {
+    starrable {
+      id
+      viewerHasStarred
+    }
+  }
+}
+    `;
+export type AddStarMutationFn = Apollo.MutationFunction<AddStarMutation, AddStarMutationVariables>;
+
+/**
+ * __useAddStarMutation__
+ *
+ * To run a mutation, you first call `useAddStarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddStarMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addStarMutation, { data, loading, error }] = useAddStarMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useAddStarMutation(baseOptions?: Apollo.MutationHookOptions<AddStarMutation, AddStarMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AddStarMutation, AddStarMutationVariables>(AddStarDocument, options);
+      }
+export type AddStarMutationHookResult = ReturnType<typeof useAddStarMutation>;
+export type AddStarMutationResult = Apollo.MutationResult<AddStarMutation>;
+export type AddStarMutationOptions = Apollo.BaseMutationOptions<AddStarMutation, AddStarMutationVariables>;
